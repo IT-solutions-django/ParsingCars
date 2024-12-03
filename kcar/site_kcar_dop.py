@@ -1,25 +1,7 @@
-import requests
-import logging
-from kcar.site_kcar import Session, TimeDealCar
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-
-def fetch_car_details(id_car):
-    url = f"https://api.kcar.com/bc/car-info-detail-of-ng?i_sCarCd={id_car}&i_sPassYn=N&bltbdKnd=CM050"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Ошибка при выполнении запроса к API для {id_car}: {e}")
-        return None
+from kcar.site_kcar import TimeDealCar
+from utils.log import logger
+from utils.db import Session
+from utils.request_api import fetch_car_details_json
 
 
 def update_car_details(car, car_details, session):
@@ -52,7 +34,8 @@ def process_cars():
     try:
         cars = session.query(TimeDealCar).all()
         for car in cars:
-            car_details = fetch_car_details(car.id_car)
+            url = f"https://api.kcar.com/bc/car-info-detail-of-ng?i_sCarCd={car.id_car}&i_sPassYn=N&bltbdKnd=CM050"
+            car_details = fetch_car_details_json(url, car.id_car)
             if car_details:
                 update_car_details(car, car_details, session)
     except Exception as e:

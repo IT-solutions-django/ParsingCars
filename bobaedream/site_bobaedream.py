@@ -1,22 +1,10 @@
-import logging
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
-import requests
+from sqlalchemy import Column, Integer, String, DateTime
+from utils.request_api import fetch_page_data
+from utils.log import logger
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-Base = declarative_base()
+from utils.db import Base, initialize_database, Session, save_cars_to_db
 
 
 class TimeDealCar(Base):
@@ -40,30 +28,6 @@ class TimeDealCar(Base):
     car_fuel = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-
-
-DATABASE_URL = "sqlite:///cars_2.db"
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-
-
-def initialize_database():
-    try:
-        Base.metadata.create_all(engine)
-    except Exception as e:
-        logger.error(f"Ошибка при создании таблицы: {e}")
-        raise
-
-
-def fetch_page_data(page, headers):
-    url = f"https://www.bobaedream.co.kr/mycar/proc/ajax_contents.php?sel_m_gubun=ALL&page={page}&order=S11&view_size=70&dummy=1732848489318"
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Ошибка при выполнении запроса к API для page {page}: {e}")
-        return None
 
 
 def parse_car_data(item):
@@ -99,20 +63,6 @@ def parse_car_data(item):
         return None
 
 
-def save_cars_to_database(cars):
-    if not cars:
-        return
-    session = Session()
-    try:
-        with session.begin():
-            session.add_all(cars)
-    except SQLAlchemyError as e:
-        logger.error(f"Ошибка сохранения данных в БД: {e}")
-        session.rollback()
-    finally:
-        session.close()
-
-
 def process_cars():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
@@ -146,7 +96,7 @@ def process_cars():
                 finally:
                     session.close()
 
-        save_cars_to_database(cars)
+        save_cars_to_db(cars)
         page += 1
 
     logger.info("Процесс обработки данных завершен.")

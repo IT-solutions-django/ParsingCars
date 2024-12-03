@@ -1,20 +1,8 @@
-import logging
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import Column, Integer, String, DateTime
 import requests
 from datetime import datetime
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-Base = declarative_base()
+from utils.log import logger
+from utils.db import Base, initialize_database, Session, save_cars_to_db
 
 
 class TimeDealCar(Base):
@@ -37,19 +25,6 @@ class TimeDealCar(Base):
     images = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-
-
-DATABASE_URL = "sqlite:///cars_2.db"
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-
-
-def create_tables():
-    try:
-        Base.metadata.create_all(engine)
-    except Exception as e:
-        logger.error(f"Ошибка при создании таблицы: {e}")
-        raise
 
 
 def fetch_data_from_api(url):
@@ -89,24 +64,8 @@ def process_car_data(cars_list):
     return cars
 
 
-def save_to_database(cars):
-    if cars:
-        session = Session()
-        try:
-            with session.begin():
-                session.add_all(cars)
-        except SQLAlchemyError as e:
-            logger.error(f"Ошибка сохранения данных в БД: {e}")
-            try:
-                session.rollback()
-            except Exception as rollback_error:
-                logger.critical(f"Ошибка отката транзакции: {rollback_error}")
-        finally:
-            session.close()
-
-
 def main():
-    create_tables()
+    initialize_database()
 
     url = "https://api.m-park.co.kr/home/api/v1/wb/searchmycar/carlistinfo/get?"
     data = fetch_data_from_api(url)
@@ -114,7 +73,7 @@ def main():
     if data:
         cars_list = data.get("data", [])
         cars = process_car_data(cars_list)
-        save_to_database(cars)
+        save_cars_to_db(cars)
 
     logger.info("Процесс обработки данных завершен.")
 

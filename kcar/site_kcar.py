@@ -1,20 +1,8 @@
-import logging
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import Column, Integer, String, DateTime
 import requests
 from datetime import datetime
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-Base = declarative_base()
+from utils.log import logger
+from utils.db import Base, initialize_database, Session, save_cars_to_db
 
 
 class TimeDealCar(Base):
@@ -38,19 +26,6 @@ class TimeDealCar(Base):
     car_type = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-
-
-DATABASE_URL = "sqlite:///cars_2.db"
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-
-
-def initialize_database():
-    try:
-        Base.metadata.create_all(engine)
-    except Exception as e:
-        logger.error(f"Ошибка при создании таблицы: {e}")
-        raise
 
 
 def fetch_car_data(url, headers, params):
@@ -89,21 +64,6 @@ def process_car_item(item):
     except Exception as e:
         logger.warning(f"Ошибка обработки элемента данных: {item}. Ошибка: {e}")
         return None
-
-
-def save_cars_to_db(cars):
-    if not cars:
-        return
-
-    session = Session()
-    try:
-        with session.begin():
-            session.add_all(cars)
-    except SQLAlchemyError as e:
-        logger.error(f"Ошибка сохранения данных в БД: {e}")
-        session.rollback()
-    finally:
-        session.close()
 
 
 def main():

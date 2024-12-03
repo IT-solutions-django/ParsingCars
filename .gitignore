@@ -1,3 +1,4 @@
 *.log
 .idea/
 site_encar.py
+*/__pycache__/

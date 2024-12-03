@@ -1,25 +1,7 @@
-import requests
-import logging
-from mpark.site_mpark import Session, TimeDealCar
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-
-def fetch_car_details(id_car):
-    url = f"https://api.m-park.co.kr/home/api/v1/wb/searchmycar/cardetailinfo/get?demoNo={id_car}"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Ошибка при выполнении запроса к API для {id_car}: {e}")
-        return None
+from mpark.site_mpark import TimeDealCar
+from utils.log import logger
+from utils.db import Session
+from utils.request_api import fetch_car_details_json
 
 
 def update_car_info(car, details):
@@ -61,7 +43,8 @@ def process_cars():
     try:
         cars = session.query(TimeDealCar).all()
         for car in cars:
-            car_details = fetch_car_details(car.id_car)
+            url = f"https://api.m-park.co.kr/home/api/v1/wb/searchmycar/cardetailinfo/get?demoNo={car.id_car}"
+            car_details = fetch_car_details_json(url, car.id_car)
             if car_details:
                 try:
                     details = car_details.get("data", {}).get("detailInfo", [])[0]

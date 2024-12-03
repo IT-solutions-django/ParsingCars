@@ -1,26 +1,8 @@
-import requests
-import logging
+from utils.log import logger
 from bs4 import BeautifulSoup
-from bobaedream.site_bobaedream import Session, TimeDealCar
-
-logging.basicConfig(
-    filename="../app.log",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-
-def fetch_car_details(id_car):
-    url = f"https://www.bobaedream.co.kr/cyber/CyberCar_view.php?no={id_car}&gubun=I"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Ошибка при выполнении запроса к API для {id_car}: {e}")
-        return None
+from bobaedream.site_bobaedream import TimeDealCar
+from utils.db import Session
+from utils.request_api import fetch_car_details
 
 
 def parse_car_details(html):
