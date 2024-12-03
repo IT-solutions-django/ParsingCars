@@ -32,3 +32,13 @@ def fetch_car_details_json(url, id_car):
     except requests.exceptions.RequestException as e:
         logger.error(f"Ошибка при выполнении запроса к API для {id_car}: {e}")
         return None
+
+
+def fetch_post_car_details_json(url, id_car, data):
+    try:
+        response = requests.post(url, data=data)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Ошибка при выполнении запроса к API для {id_car}: {e}")
+        return None
