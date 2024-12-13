@@ -132,7 +132,7 @@ async def main():
     }
 
     semaphore = asyncio.Semaphore(50)
-    async_engine = create_async_engine("sqlite+aiosqlite:///../cars_2.db")
+    async_engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
     async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
     try:

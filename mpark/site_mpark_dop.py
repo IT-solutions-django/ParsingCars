@@ -106,7 +106,7 @@ async def process_car(session_factory, car, semaphore, client_session):
 
 
 async def process_cars():
-    engine = create_async_engine("sqlite+aiosqlite:///../cars_2.db")
+    engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
     try:
         session_factory = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
         async with aiohttp.ClientSession() as client_session:
