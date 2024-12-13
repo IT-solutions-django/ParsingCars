@@ -1,40 +1,55 @@
 import asyncio
-import datetime
 from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from kcar.site_kcar import TimeDealCar
+from charancha.site_charancha import TimeDealCar
 from utils.log import logger
 from sqlalchemy import select
+import datetime
 
 
 async def update_car_details(car, car_details, session):
     try:
-        details = car_details.get("data", {}).get("rvo", {})
-        car_type = details.get("carctgr", None)
-        car_transmission = details.get("trnsmsncdNm", None)
-        car_fuel = details.get("fuelTypecdNm", None)
-        car_noAccident = details.get("acdtHistComnt", None)
-        drive = details.get("drvgYnNm", None)
+        details = car_details
+        car_mark = details.get("makerNm", "")
+        car_model = details.get("modelNm", "")
+        car_complectation = details.get("gradeNm", "")
+        price = details.get("sellPrice")
+        car_fuel = details.get("fuelNm", "")
+        transmission = details.get("transmissionNm", "")
+        millage = details.get("mileage", "")
+        car_type = details.get("carTypeNm", "") + " " + details.get("bodyTypeNm", "")
+        color = details.get("colorNm", "")
+        images = details.get("carImg", "")
+        main_image = images
+        car_description = details.get("description", "")
+        year = details.get("modelYyyyDt", "")
+        engine_capacity = details.get("displacement", "")
 
-        images_list = [image["elanPath"] for image in car_details.get("data", {}).get("photoList", [])]
-        res_images = ', '.join(images_list)
-
-        car.transmission = car_transmission
-        car.car_type = car_type
+        car.car_mark = car_mark
+        car.car_model = car_model
+        car.car_complectation = car_complectation
+        car.price = price
         car.car_fuel = car_fuel
-        car.car_noAccident = car_noAccident
-        car.drive = drive
-        car.images = res_images
+        car.transmission = transmission
+        car.millage = millage
+        car.car_type = car_type
+        car.color = color
+        car.images = images
+        car.main_image = main_image
+        car.car_description = car_description
+        car.year = year
+        car.engine_capacity = engine_capacity
 
         session.add(car)
         await session.commit()
     except Exception as e:
         logger.warning(f"Ошибка обработки данных для {car.id_car}: {e}")
         await session.rollback()
+        return None
 
 
-async def request(url, http_session, id_car):
+async def request(http_session, url, id_car):
     try:
         async with http_session.get(url, timeout=30) as response:
             response.raise_for_status()
@@ -44,19 +59,20 @@ async def request(url, http_session, id_car):
         return None
 
 
-async def process_car(http_session, session, car):
-    url = f"https://api.kcar.com/bc/car-info-detail-of-ng?i_sCarCd={car.id_car}&i_sPassYn=N&bltbdKnd=CM050"
+async def process_car(http_session, async_session, car):
+    url = f"https://charancha.com/v1/cars/{car.id_car}?"
 
     update_time = datetime.datetime.strftime(car.updated_at, "%Y-%m-%d")
     now_date = str(datetime.datetime.now().date())
 
     if update_time == now_date:
-        response = await request(url, http_session, car.id_car)
+        response = await request(http_session, url, car.id_car)
     else:
         response = None
 
     if response:
-        await update_car_details(car, response, session)
+        car_update = await update_car_details(car, response, async_session)
+        return car_update
     else:
         return None
 

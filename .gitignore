@@ -2,3 +2,5 @@
 .idea/
 site_encar.py
 */__pycache__/
+__pycache__/
+cars_2.db
