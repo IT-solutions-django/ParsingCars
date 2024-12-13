@@ -14,5 +14,23 @@ services:
     volumes:
       - .:/app
     restart: always
+    command: celery -A tasks worker --loglevel=info
 
+  celery_beat:
+    build: .
+    container_name: celery_beat
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    restart: always
+    command: celery -A tasks beat --loglevel=info
 
+  app:
+    build: .
+    container_name: app
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    restart: always
