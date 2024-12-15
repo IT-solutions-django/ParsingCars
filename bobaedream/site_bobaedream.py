@@ -50,7 +50,7 @@ async def parse_car_data(item):
         if name:
             car_full_name = name.split(" ")
             car_mark = car_full_name[0]
-            car_model = car_full_name[1:]
+            car_model = " ".join(car_full_name[1:])
         else:
             car_mark = None
             car_model = None
