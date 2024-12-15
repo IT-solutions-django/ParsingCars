@@ -5,3 +5,4 @@ site_encar.py
 __pycache__/
 cars_2.db
 celerybeat-schedule
+cars_2.db-journal

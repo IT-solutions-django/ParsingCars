@@ -7,36 +7,35 @@ from kcar.site_kcar_script import run_parser as parse_4
 from mpark.site_mpark_script import run_parser as parse_5
 from utils.log import logger
 from celery.schedules import crontab
+from asgiref.sync import async_to_sync
 
 app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
 
 async def run_parsers():
     logger.info("Задачи запустились")
-    tasks = [
-        parse_1(),
-        parse_2(),
-        parse_3(),
-        parse_4(),
-        parse_5()
-    ]
-    results = await asyncio.gather(*tasks)
-    logger.info(f"Результаты парсеров: {results}")
-    return results
+
+    await parse_1()
+    await parse_2()
+    await parse_3()
+    await parse_4()
+    await parse_5()
+
+    logger.info(f"Задачи завершились")
 
 
 @app.task
 def run_all_parsers():
     logger.info("Запуск задачи Celery 'run_all_parsers'")
 
-    result = asyncio.run(run_parsers())
+    result = async_to_sync(run_parsers)()
     return result
 
 
 app.conf.beat_schedule = {
-    'run-every-day-at-9am': {
+    'run-every-day-at-13-30am': {
         'task': 'tasks.run_all_parsers',
-        'schedule': crontab(hour=9, minute=0),
+        'schedule': crontab(hour=13, minute=30),
     },
 }
 app.conf.timezone = 'Asia/Novosibirsk'

@@ -26,7 +26,8 @@ class TimeDealCar(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_car = Column(String)
     url_car = Column(String)
-    car_name = Column(String)
+    car_mark = Column(String)
+    car_model = Column(String)
     drive = Column(String)
     price = Column(String)
     year = Column(Integer)
@@ -46,6 +47,13 @@ async def parse_car_data(item):
     try:
         name = item.select_one(".tit.ellipsis a")
         name = name.get_text(strip=True) if name else None
+        if name:
+            car_full_name = name.split(" ")
+            car_mark = car_full_name[0]
+            car_model = car_full_name[1:]
+        else:
+            car_mark = None
+            car_model = None
 
         price = item.select_one(".mode-cell.price .price-whole")
         price = price.get_text(strip=True) if price else None
@@ -64,7 +72,8 @@ async def parse_car_data(item):
         return TimeDealCar(
             id_car=car_id,
             url_car=url_car,
-            car_name=name,
+            car_mark=car_mark,
+            car_model=car_model,
             price=price,
             images=photo_url,
             main_image=photo_url
