@@ -7,6 +7,7 @@ from utils.request_api import fetch_car_details
 from sqlalchemy import select
 import asyncio
 import datetime
+import re
 
 
 def parse_car_details(html):
@@ -18,9 +19,21 @@ def parse_car_details(html):
         color = extract_table_value(table, "색상")
         transmission = extract_table_value(table, "변속기")
         engine_capacity = extract_table_value(table, "배기량")
+        if engine_capacity:
+            match = re.match(r"[\d,]+", engine_capacity)
+            if match:
+                engine_capacity = match.group(0)
         car_fuel = extract_table_value(table, "연료")
         year = extract_table_value(table, "연식")
+        if year:
+            match = re.match(r"\d+", year)
+            if match:
+                year = match.group(0)
         millage = extract_table_value(table, "주행거리")
+        if millage:
+            match = re.match(r"[\d,]+", millage)
+            if match:
+                millage = match.group(0)
 
         drive = extract_table2_value(table_2)
 
@@ -47,20 +60,23 @@ def extract_table2_value(table):
 
 
 def update_car_details(car, color, transmission, engine_capacity, car_fuel, year, millage, drive):
-    if color:
-        car.color = color
-    if transmission:
-        car.transmission = transmission
-    if engine_capacity:
-        car.engine_capacity = engine_capacity
-    if car_fuel:
-        car.car_fuel = car_fuel
-    if year:
-        car.year = year
-    if millage:
-        car.millage = millage
-    if drive:
-        car.drive = drive
+    try:
+        if color:
+            car.color = color
+        if transmission:
+            car.transmission = transmission
+        if engine_capacity:
+            car.engine_capacity = engine_capacity
+        if car_fuel:
+            car.car_fuel = car_fuel
+        if year:
+            car.year = year
+        if millage:
+            car.millage = millage
+        if drive:
+            car.drive = drive
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении параметров: {e}")
 
 
 async def process_request_limited(car, semaphore, session_factory):
@@ -74,12 +90,10 @@ async def process_request_limited(car, semaphore, session_factory):
             else:
                 car_details_html = None
             if car_details_html:
+                color, transmission, engine_capacity, car_fuel, year, millage, drive = parse_car_details(
+                    car_details_html)
                 async with session_factory() as db_session:
                     async with db_session.begin():
-                        car = await db_session.merge(car)
-
-                        color, transmission, engine_capacity, car_fuel, year, millage, drive = parse_car_details(
-                            car_details_html)
                         update_car_details(car, color, transmission, engine_capacity, car_fuel, year, millage, drive)
 
                         db_session.add(car)
@@ -91,20 +105,23 @@ async def process_request_limited(car, semaphore, session_factory):
 
 
 async def process_cars():
-    semaphore = asyncio.Semaphore(50)
+    try:
+        semaphore = asyncio.Semaphore(15)
 
-    engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
-    session_factory = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+        engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
+        session_factory = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-    async with session_factory() as db_session:
-        async with db_session.begin():
-            result = await db_session.execute(select(TimeDealCar))
-            cars = result.scalars().all()
+        async with session_factory() as db_session:
+            async with db_session.begin():
+                result = await db_session.execute(select(TimeDealCar))
+                cars = result.scalars().all()
 
-    tasks = [process_request_limited(car, semaphore, session_factory) for car in cars]
-    await asyncio.gather(*tasks)
+        tasks = [process_request_limited(car, semaphore, session_factory) for car in cars]
+        await asyncio.gather(*tasks)
 
-    logger.info("Процесс обновления данных завершен.")
+        logger.info("Процесс обновления данных завершен.")
+    except Exception as e:
+        logger.error(f"Ошибка обновления данных: {e}")
 
 
 def main():

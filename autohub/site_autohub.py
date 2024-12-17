@@ -73,6 +73,10 @@ async def fetch_car_detail_dop(session, id_car):
         info_detail.find("dt", string="배기량").find_next_sibling("dd").text
         if info_detail else None
     )
+    if engine_capacity:
+        match = re.match(r"[\d,]+", engine_capacity)
+        if match:
+            engine_capacity = match.group(0)
     return engine_capacity
 
 
@@ -100,8 +104,16 @@ async def parse_car_data(session, item):
 
         year = item.select_one('.car-state dt:-soup-contains("연식") + dd').get_text(strip=True) if item.select_one(
             '.car-state dt:-soup-contains("연식") + dd') else None
+        if year:
+            match = re.match(r"(\d+)", year)
+            if match:
+                year = match.group(1)
         millage = item.select_one('.car-state dt:-soup-contains("주행거리") + dd').get_text(strip=True) if item.select_one(
             '.car-state dt:-soup-contains("주행거리") + dd') else None
+        if millage:
+            match = re.match(r"[\d,]+", millage)
+            if match:
+                millage = match.group(0)
 
         color = item.select_one('.car-data dt:-soup-contains("색상") + dd').get_text(strip=True) if item.select_one(
             '.car-data dt:-soup-contains("색상") + dd') else None

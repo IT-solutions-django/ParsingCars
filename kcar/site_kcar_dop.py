@@ -36,7 +36,7 @@ async def update_car_details(car, car_details, session):
 
 async def request(url, http_session, id_car):
     try:
-        async with http_session.get(url, timeout=30) as response:
+        async with http_session.get(url, timeout=50) as response:
             response.raise_for_status()
             return await response.json()
     except Exception as e:
@@ -68,7 +68,7 @@ async def limited_process_car(http_session, async_session_factory, car, semaphor
 
 
 async def process_cars():
-    semaphore = asyncio.Semaphore(50)
+    semaphore = asyncio.Semaphore(30)
     async_engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
     async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 

@@ -71,7 +71,7 @@ async def save_cars_to_db_async(cars, async_session):
 
 async def request(url, data_post, page, http_session):
     try:
-        async with http_session.post(url, data=data_post, timeout=30) as response:
+        async with http_session.post(url, data=data_post, timeout=50) as response:
             response.raise_for_status()
             return await response.text()
     except Exception as e:

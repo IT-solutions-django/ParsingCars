@@ -1,67 +1,40 @@
 from autohub.site_autohub import TimeDealCar
 from utils.log import logger
-from utils.db import Session
-from googletrans import Translator
 import redis
+import httpx
+from googletrans import Translator
+import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select
 
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
-
-translator = Translator()
-
-translations_words = {
-    'color': {
-        '': 'Не указан',
-        '은회색': 'Серебристо-серый',
-        '아이보리': 'Слоновая кость',
-        '갈대색': 'Тростниковый',
-        '청색': 'Синий',
-        '화이트펄': 'Белый перламутр',
-        '자주(보라)': 'Пурпурный (фиолетовый)',
-        '초록(연두)': 'Зелёный (светло-зелёный)',
-        '검정': 'Чёрный',
-        '흰색(미색)': 'Белый (кремовый)',
-        '회색': 'Серый',
-        '파랑(남색,곤색)': 'Синий (тёмно-синий, васильковый)',
-        '노랑': 'Жёлтый',
-        '금모래': 'Золотой песок',
-        '흰색': 'Белый',
-        '베이지': 'Бежевый',
-        '은색': 'Серебристый',
-        '미색': 'Кремовый',
-        '하늘': 'Небесно-голубой',
-        '밀키베이지': 'Молочный бежевый',
-        '플라티늄그라파이트': 'Платиновый графит',
-        '다크그레이': 'Тёмно-серый',
-        '그레이티타늄': 'Серый титан',
-        '진주': 'Жемчужный',
-        '쥐색': 'Мышиный серый',
-        '갈색(밤색)': 'Коричневый (каштановый)',
-        '빨강(주홍)': 'Красный (алый)',
-        '-': 'Не применимо',
-    },
-    'transmission': {
-        '': 'Не указана',
-        '기타': 'Другое',
-        '자동': 'Автоматическая',
-        '수동': 'Механическая',
-        '세미오토': 'Полуавтоматическая',
-    },
-    'car_fuel': {
-        '': 'Не указан',
-        '전기+경유': 'Электричество + дизель',
-        '전기+휘발유': 'Электричество + бензин',
-        '휘발유': 'Бензин',
-        '전기': 'Электричество',
-        '수소전기': 'Водородно-электрический',
-        '전기+LPG': 'Электричество + LPG',
-        '경유': 'Дизель',
-        'LPG겸용': 'Сочетание LPG',
-        'LPG': 'LPG',
-    }
-}
+redis_client = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True)
 
 
-def translate_with_redis_cache(text, src, dest):
+class AsyncTranslator(Translator):
+    def __init__(self, max_concurrent_requests=5):
+        self.semaphore = asyncio.Semaphore(max_concurrent_requests)
+
+    async def translate(self, text, src="auto", dest="en"):
+        await asyncio.sleep(0.2)
+        async with self.semaphore:
+            async with httpx.AsyncClient() as client:
+                data = await client.post(
+                    "https://translate.googleapis.com/translate_a/single",
+                    params={
+                        "client": "gtx",
+                        "sl": src,
+                        "tl": dest,
+                        "dt": "t",
+                        "q": text,
+                    },
+                )
+                data.raise_for_status()
+                translation = data.json()[0][0][0]
+                return translation
+
+
+async def translate_with_redis_cache(translator, text, src, dest):
     if not text.strip():
         return text
 
@@ -70,26 +43,26 @@ def translate_with_redis_cache(text, src, dest):
     if cached_value:
         return cached_value
 
-    translated_text = translator.translate(text, src=src, dest=dest).text
+    translated_text = await translator.translate(text, src=src, dest=dest)
     redis_client.set(cache_key, translated_text)
     return translated_text
 
 
-def translation(car):
+async def translation(car, translator):
     try:
-        fields_to_translate_ru = ["year", "color", "transmission", "car_fuel"]
-        fields_to_translate_en = ["car_name"]
+        fields_to_translate_ru = ["color", "transmission", "car_fuel"]
+        fields_to_translate_en = ["car_mark", "car_model"]
 
         for field in fields_to_translate_ru:
             value = getattr(car, field, None)
             if value and isinstance(value, str) and value.strip():
-                translated_value = translate_with_redis_cache(value, src="ko", dest="ru")
+                translated_value = await translate_with_redis_cache(translator, value, src="ko", dest="ru")
                 setattr(car, field, translated_value)
 
         for field in fields_to_translate_en:
             value = getattr(car, field, None)
             if value and isinstance(value, str) and value.strip():
-                translated_value = translate_with_redis_cache(value, src="ko", dest="en")
+                translated_value = await translate_with_redis_cache(translator, value, src="ko", dest="en")
                 setattr(car, field, translated_value)
 
         return car
@@ -98,30 +71,36 @@ def translation(car):
         return None
 
 
-def process_cars(batch_size=100):
-    session = Session()
-    try:
+async def process_cars(batch_size=100):
+    engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
+    async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+    async with async_session() as session:
+        translator = AsyncTranslator()
         offset = 0
+
         while True:
-            cars = session.query(TimeDealCar).limit(batch_size).offset(offset).all()
+            cars = await session.execute(
+                select(TimeDealCar).limit(batch_size).offset(offset)
+            )
+            cars = cars.scalars().all()
+
             if not cars:
                 break
+
             for car in cars:
-                car_translation = translation(car)
+                car_translation = await translation(car, translator)
                 if car_translation:
-                    session.add(car_translation)
-            session.commit()
+                    await session.merge(car_translation)
+
+            await session.commit()
             offset += batch_size
-    except Exception as e:
-        logger.error(f"Ошибка перевода автомобилей: {e}")
-    finally:
-        session.close()
 
 
-def main():
-    process_cars()
+async def main():
+    await process_cars()
     logger.info("Процесс перевода данных завершен.")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

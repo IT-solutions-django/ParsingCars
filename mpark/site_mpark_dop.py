@@ -24,7 +24,7 @@ async def fetch_car_details_json(url, id_car, session, retries=5):
     delay = 1
     for attempt in range(retries):
         try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=50)) as response:
                 response.raise_for_status()
                 return await response.json()
         except aiohttp.ClientError as e:
@@ -54,6 +54,10 @@ async def update_car_info(car, details):
             car_model = re.sub(brackets_pattern, "", car_model).strip()
         price = details.get("demoAmt", None)
         year = details.get("yymm", None)
+        if year:
+            match = re.match(r"(\d+)", year)
+            if match:
+                year = match.group(1)
         millage = details.get("km", None)
         car_fuel = details.get("carGas", None)
         car_noAccident = details.get("noAccident", None)
