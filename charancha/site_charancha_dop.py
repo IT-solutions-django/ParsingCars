@@ -15,16 +15,24 @@ async def update_car_details(car, car_details, session):
         car_model = details.get("modelNm", "")
         car_complectation = details.get("gradeNm", "")
         price = details.get("sellPrice")
+        if price:
+            price = int(price)
         car_fuel = details.get("fuelNm", "")
         transmission = details.get("transmissionNm", "")
         millage = details.get("mileage", "")
+        if millage:
+            millage = int(millage)
         car_type = details.get("carTypeNm", "") + " " + details.get("bodyTypeNm", "")
         color = details.get("colorNm", "")
         images = details.get("carImg", "")
         main_image = images
         car_description = details.get("description", "")
         year = details.get("modelYyyyDt", "")
+        if year:
+            year = int(year)
         engine_capacity = details.get("displacement", "")
+        if engine_capacity:
+            engine_capacity = int(engine_capacity)
 
         car.car_mark = car_mark
         car.car_model = car_model

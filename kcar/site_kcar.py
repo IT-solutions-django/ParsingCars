@@ -66,9 +66,15 @@ async def process_car_item(item):
         car_model = item.get("modelNm")
         car_name = item.get("mnuftrNm")
         price = item.get("prc")
+        if price:
+            price = int(price)
         image = item.get("lsizeImgPath")
         year = item.get("prdcnYr")
+        if year:
+            year = int(year)
         millage = item.get("milg")
+        if millage:
+            millage = int(millage)
         color = item.get("extrColorNm")
         url_car = f"https://www.kcar.com/bc/detail/carInfoDtl?i_sCarCd={id_car}"
 

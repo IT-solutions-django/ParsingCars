@@ -44,6 +44,8 @@ async def update_car_info(car, details):
     try:
         car_color = details.get("carColor", None)
         engine_capacity = details.get("numCc", None)
+        if engine_capacity:
+            engine_capacity = int(engine_capacity)
         car_type = details.get("carType", None)
         car_mark = details.get("carName", None)
         if car_mark:
@@ -53,12 +55,16 @@ async def update_car_info(car, details):
             car_model = re.sub(pattern, "", car_model).strip()
             car_model = re.sub(brackets_pattern, "", car_model).strip()
         price = details.get("demoAmt", None)
+        if price:
+            price = int(price)
         year = details.get("yymm", None)
         if year:
             match = re.match(r"(\d+)", year)
             if match:
-                year = match.group(1)
+                year = 2000 + int(match.group(1))
         millage = details.get("km", None)
+        if millage:
+            millage = int(millage)
         car_fuel = details.get("carGas", None)
         car_noAccident = details.get("noAccident", None)
         transmission = details.get("carAutoGbn", None)

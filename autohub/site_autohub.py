@@ -77,6 +77,9 @@ async def fetch_car_detail_dop(session, id_car):
         match = re.match(r"[\d,]+", engine_capacity)
         if match:
             engine_capacity = match.group(0)
+            if ',' in engine_capacity:
+                engine_capacity = engine_capacity.replace(',', '')
+            engine_capacity = int(engine_capacity)
     return engine_capacity
 
 
@@ -99,6 +102,11 @@ async def parse_car_data(session, item):
             car_mark = None
             car_model = None
         car_price = item.select_one('.car-price b').get_text(strip=True) if item.select_one('.car-price b') else None
+        if car_price:
+            if not any(char.isalpha() for char in car_price):
+                if ',' in car_price:
+                    car_price = car_price.replace(',', '')
+                car_price = int(car_price)
         car_description = item.select_one('.car-name span').get_text(strip=True) if item.select_one(
             '.car-name span') else None
 
@@ -107,13 +115,16 @@ async def parse_car_data(session, item):
         if year:
             match = re.match(r"(\d+)", year)
             if match:
-                year = match.group(1)
+                year = int(match.group(1))
         millage = item.select_one('.car-state dt:-soup-contains("주행거리") + dd').get_text(strip=True) if item.select_one(
             '.car-state dt:-soup-contains("주행거리") + dd') else None
         if millage:
             match = re.match(r"[\d,]+", millage)
             if match:
                 millage = match.group(0)
+                if ',' in millage:
+                    millage = millage.replace(',', '')
+                millage = int(millage)
 
         color = item.select_one('.car-data dt:-soup-contains("색상") + dd').get_text(strip=True) if item.select_one(
             '.car-data dt:-soup-contains("색상") + dd') else None

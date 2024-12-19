@@ -23,17 +23,23 @@ def parse_car_details(html):
             match = re.match(r"[\d,]+", engine_capacity)
             if match:
                 engine_capacity = match.group(0)
+                if ',' in engine_capacity:
+                    engine_capacity = engine_capacity.replace(',', '')
+                engine_capacity = int(engine_capacity)
         car_fuel = extract_table_value(table, "연료")
         year = extract_table_value(table, "연식")
         if year:
             match = re.match(r"\d+", year)
             if match:
-                year = match.group(0)
+                year = int(match.group(0))
         millage = extract_table_value(table, "주행거리")
         if millage:
             match = re.match(r"[\d,]+", millage)
             if match:
                 millage = match.group(0)
+                if ',' in millage:
+                    millage = millage.replace(',', '')
+                millage = int(millage)
 
         drive = extract_table2_value(table_2)
 

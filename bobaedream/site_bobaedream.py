@@ -57,6 +57,11 @@ async def parse_car_data(item):
 
         price = item.select_one(".mode-cell.price .price-whole")
         price = price.get_text(strip=True) if price else None
+        if price:
+            if not any(char.isalpha() for char in price):
+                if ',' in price:
+                    price = price.replace(',', '')
+                price = int(price)
 
         photo = item.select_one(".thumb img")
         photo_url = f"https:{photo['src']}" if photo and 'src' in photo.attrs else None
