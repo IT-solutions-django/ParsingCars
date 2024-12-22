@@ -4,11 +4,11 @@ from django import forms
 class AutoHubFilterForm(forms.Form):
     TRANSMISSION_CHOICES = [
         ('', ''),
-        ('자동', 'Автомат'),
-        ('수동', 'Механика'),
-        ('세미오토', 'Полуавтомат'),
-        ('CVT', 'Вариатор'),
-        ('기타', 'Другое'),
+        ('Автомат', 'Автомат'),
+        ('Механика', 'Механика'),
+        ('Полуавтомат', 'Полуавтомат'),
+        ('Вариатор', 'Вариатор'),
+        ('Другое', 'Другое'),
     ]
     transmission = forms.ChoiceField(
         choices=TRANSMISSION_CHOICES,
@@ -20,12 +20,56 @@ class AutoHubFilterForm(forms.Form):
         ),
     )
 
+    millage_min = forms.IntegerField(
+        min_value=10000,
+        max_value=200000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Пробег от, km',
+            'step': '10000',
+            'onkeypress': 'limitCharacters(this, 6, event)',
+        })
+    )
+    millage_max = forms.IntegerField(
+        min_value=10000,
+        max_value=200000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'до',
+            'step': '10000',
+            'onkeypress': 'limitCharacters(this, 6, event)',
+        })
+    )
+
+    engine_volume_min = forms.IntegerField(
+        min_value=0,
+        max_value=10000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Объем от, cc',
+            'step': '100'
+        })
+    )
+    engine_volume_max = forms.IntegerField(
+        min_value=0,
+        max_value=10000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'до',
+            'step': '100'
+        })
+    )
+
 
 class BobaedreamFilterForm(forms.Form):
     TRANSMISSION_CHOICES = [
         ('', ''),
-        ('자동', 'Автомат'),
-        ('수동', 'Механика'),
+        ('Автомат', 'Автомат'),
+        ('Механика', 'Механика'),
     ]
 
     DRIVE_CHOICES = [
@@ -53,4 +97,27 @@ class BobaedreamFilterForm(forms.Form):
                 "class": "form-control hidden-select"
             },
         ),
+    )
+
+    millage_min = forms.IntegerField(
+        min_value=10000,
+        max_value=200000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Пробег от, km',
+            'step': '10000',
+            'onkeypress': 'limitCharacters(this, 6, event)',
+        })
+    )
+    millage_max = forms.IntegerField(
+        min_value=10000,
+        max_value=200000,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'до',
+            'step': '10000',
+            'onkeypress': 'limitCharacters(this, 6, event)',
+        })
     )

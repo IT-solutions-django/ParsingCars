@@ -36,7 +36,7 @@ class TimeDealCar(Base):
     main_image = Column(String)
     color = Column(String)
     transmission = Column(String)
-    engine_capacity = Column(String)
+    engine_capacity = Column(Integer)
     car_fuel = Column(String)
     created_at = Column(DateTime(timezone=True), default=get_novosibirsk_time, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=get_novosibirsk_time, onupdate=get_novosibirsk_time,

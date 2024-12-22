@@ -160,16 +160,17 @@
 
 							<div class="col">
 								<div class="input-group">
-									<input type="number" name="mileage_min" class="form-control discharges" placeholder="Пробег от, км" min="0" step="10000" onkeypress="limitCharacters(this, 6, event)" id="id_mileage_min">
-									<input type="number" name="mileage_max" class="form-control discharges" placeholder="до" min="0" step="10000" onkeypress="limitCharacters(this, 6, event)" id="id_mileage_max">
+									{{ form.millage_min }}
+									{{ form.millage_max }}
 								</div>
 							</div>
 
 							<div class="col">
 								<div class="input-group">
-									<input type="number" name="engine_volume_min" class="form-control discharges" placeholder="Объем от, cc" min="0" max="10000" step="100" onkeypress="limitCharacters(this, 4, event)" id="id_engine_volume_min">
-									<input type="number" name="engine_volume_max" class="form-control discharges" placeholder="до" min="0" max="10000" step="100" onkeypress="limitCharacters(this, 4, event)" id="id_engine_volume_max">
+									{{ form.engine_volume_min }}
+									{{ form.engine_volume_max }}
 								</div>
+
 							</div>
 
 							<div class="col">
@@ -302,7 +303,7 @@
 
 						<div class="d-flex flex-row mt-3 buttons-filter align-items-center">
 						  <button class="btn">Показать</button>
-						  <a href="/cars_japan/" class="btn">Сбросить</a>
+						  <a href="{{ request.path }}" class="btn">Сбросить</a>
 						</div>
 					</form>
 				</div>
@@ -365,8 +366,8 @@
 
 
 				{% if page_cars.has_previous %}
-					<a href="?page=1">1</a>
-					<a href="?page={{ page_cars.previous_page_number }}">Назад</a>
+					<a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">1</a>
+					<a href="?page={{ page_cars.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Назад</a>
 				{% endif %}
 
 		{% if page_cars.number > 3 %}
@@ -374,7 +375,7 @@
         {% endif %}
 		{% for num in page_cars.paginator.page_range %}
             {% if num > page_cars.number|add:-3 and num < page_cars.number|add:3 %}
-                <a href="?page={{ num }}" class="{% if num == page_cars.number %}current-page{% endif %}">{{ num }}</a>
+                <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if num == page_cars.number %}current-page{% endif %}">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
@@ -383,8 +384,8 @@
         {% endif %}
 
         {% if page_cars.has_next %}
-            <a href="?page={{ page_cars.next_page_number }}">Следующая</a>
-            <a href="?page={{ page_cars.paginator.num_pages }}">{{ page_cars.paginator.num_pages }}</a>
+            <a href="?page={{ page_cars.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Следующая</a>
+            <a href="?page={{ page_cars.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ page_cars.paginator.num_pages }}</a>
         {% endif %}
 
 
