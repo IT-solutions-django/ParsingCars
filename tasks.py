@@ -18,8 +18,8 @@ async def run_parsers():
     # await parse_1()
     # await parse_2()
     # await parse_3()
-    await parse_4()
-    # await parse_5()
+    # await parse_4()
+    await parse_5()
 
     logger.info(f"Задачи завершились")
 
@@ -33,9 +33,9 @@ def run_all_parsers():
 
 
 app.conf.beat_schedule = {
-    'run-every-day-at-0:17am': {
+    'run-every-day-at-0:35am': {
         'task': 'tasks.run_all_parsers',
-        'schedule': crontab(hour=0, minute=17),
+        'schedule': crontab(hour=0, minute=35),
     },
 }
 app.conf.timezone = 'Asia/Novosibirsk'
