@@ -104,7 +104,7 @@ async def process_request_limited(car, semaphore, session_factory):
 
                         db_session.add(car)
                         await db_session.commit()
-            await asyncio.sleep(1)
+            await asyncio.sleep(3)
             return car
         except Exception as e:
             logger.error(f"Ошибка при обработке автомобиля {car.id_car}: {e}")

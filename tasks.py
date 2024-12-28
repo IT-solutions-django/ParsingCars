@@ -15,11 +15,11 @@ app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379
 async def run_parsers():
     logger.info("Задачи запустились")
 
-    await parse_1()
+    # await parse_1()
     await parse_2()
-    await parse_3()
-    await parse_4()
-    await parse_5()
+    # await parse_3()
+    # await parse_4()
+    # await parse_5()
 
     logger.info(f"Задачи завершились")
 
@@ -33,9 +33,9 @@ def run_all_parsers():
 
 
 app.conf.beat_schedule = {
-    'run-every-day-at-19am': {
+    'run-every-day-at-20:15am': {
         'task': 'tasks.run_all_parsers',
-        'schedule': crontab(hour=19, minute=0),
+        'schedule': crontab(hour=20, minute=15),
     },
 }
 app.conf.timezone = 'Asia/Novosibirsk'

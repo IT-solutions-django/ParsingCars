@@ -126,15 +126,24 @@ async def process_page(page, headers, async_session, session):
 async def process_page_limited(page, headers, async_session, session, semaphore):
     async with semaphore:
         result_limited = await process_page(page, headers, async_session, session)
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
         return result_limited
 
 
 async def process_cars():
     semaphore = asyncio.Semaphore(10)
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
-        'Referer': 'https://www.bobaedream.co.kr/cyber/CyberCar.php?sel_m_gubun=ALL'
+        'Referer': 'https://www.bobaedream.co.kr/cyber/CyberCar.php?sel_m_gubun=ALL',
+        'Cookie': '_ga=GA1.1.1209283205.1732503816; _ga_F5YV62DJXL=GS1.1.1735389609.9.0.1735389611.0.0.0',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
     }
 
     engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
