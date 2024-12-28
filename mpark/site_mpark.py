@@ -58,7 +58,7 @@ async def fetch_data_from_api(url, retries=5):
     for attempt in range(retries):
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=50)) as response:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=100)) as response:
                     response.raise_for_status()
                     return await response.json()
         except aiohttp.ClientError as e:

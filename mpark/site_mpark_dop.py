@@ -24,7 +24,7 @@ async def fetch_car_details_json(url, id_car, session, retries=5):
     delay = 1
     for attempt in range(retries):
         try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=50)) as response:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=100)) as response:
                 response.raise_for_status()
                 return await response.json()
         except aiohttp.ClientError as e:
@@ -98,6 +98,7 @@ async def process_car(session_factory, car, semaphore, client_session):
 
         if update_time == now_date:
             car_details = await fetch_car_details_json(url, car.id_car, client_session)
+            await asyncio.sleep(1)
         else:
             car_details = None
         if car_details:

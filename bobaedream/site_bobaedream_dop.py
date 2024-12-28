@@ -104,6 +104,7 @@ async def process_request_limited(car, semaphore, session_factory):
 
                         db_session.add(car)
                         await db_session.commit()
+            await asyncio.sleep(1)
             return car
         except Exception as e:
             logger.error(f"Ошибка при обработке автомобиля {car.id_car}: {e}")
@@ -112,7 +113,7 @@ async def process_request_limited(car, semaphore, session_factory):
 
 async def process_cars():
     try:
-        semaphore = asyncio.Semaphore(15)
+        semaphore = asyncio.Semaphore(10)
 
         engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
         session_factory = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

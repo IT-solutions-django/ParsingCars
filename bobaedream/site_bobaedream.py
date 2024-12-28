@@ -125,7 +125,9 @@ async def process_page(page, headers, async_session, session):
 
 async def process_page_limited(page, headers, async_session, session, semaphore):
     async with semaphore:
-        return await process_page(page, headers, async_session, session)
+        result_limited = await process_page(page, headers, async_session, session)
+        await asyncio.sleep(1)
+        return result_limited
 
 
 async def process_cars():

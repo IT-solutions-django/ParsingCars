@@ -71,7 +71,7 @@ async def save_cars_to_db_async(cars, async_session):
 
 async def request(url, data_post, page, http_session):
     try:
-        async with http_session.post(url, data=data_post, timeout=50) as response:
+        async with http_session.post(url, data=data_post, timeout=100) as response:
             response.raise_for_status()
             return await response.text()
     except Exception as e:
@@ -112,12 +112,13 @@ async def process_page(url, data_post, page, http_session, async_session, existi
 async def process_page_limited(url, data_post, page, http_session, async_session_factory, semaphore, existing_car):
     async with semaphore:
         await process_page(url, data_post, page, http_session, async_session_factory, existing_car)
+        await asyncio.sleep(5)
 
 
 async def process_cars():
     total_pages = 1000
 
-    semaphore = asyncio.Semaphore(50)
+    semaphore = asyncio.Semaphore(10)
     async_engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
     async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 

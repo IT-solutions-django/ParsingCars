@@ -124,7 +124,7 @@ async def save_cars_to_db_async(cars, async_session):
 async def main():
     semaphore = asyncio.Semaphore(10)
     total_pages = 1000
-    async_engine = create_async_engine("sqlite+aiosqlite:///../cars_2.db")
+    async_engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")
     async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
     try:

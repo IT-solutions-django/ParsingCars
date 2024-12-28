@@ -10,7 +10,7 @@ async def fetch_page_data(session, page, headers, retries=3, backoff=2):
     url = f"https://www.bobaedream.co.kr/mycar/proc/ajax_contents.php?page={page}&view_size=10"
     for attempt in range(retries):
         try:
-            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=50)) as response:
+            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=100)) as response:
                 if response.status == 200:
                     content = await response.text()
 
@@ -38,7 +38,7 @@ async def fetch_car_details(id_car):
     url = f"https://www.bobaedream.co.kr/cyber/CyberCar_view.php?no={id_car}&gubun=I"
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=60)) as response:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=100)) as response:
                 response.raise_for_status()
                 return await response.text()
     except aiohttp.ClientError as e:
