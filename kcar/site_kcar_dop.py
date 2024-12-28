@@ -6,6 +6,15 @@ from sqlalchemy.orm import sessionmaker
 from kcar.site_kcar import TimeDealCar
 from utils.log import logger
 from sqlalchemy import select
+import random
+
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.119 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+]
 
 
 async def update_car_details(car, car_details, session):
@@ -35,8 +44,22 @@ async def update_car_details(car, car_details, session):
 
 
 async def request(url, http_session, id_car):
+    random_user_agent = random.choice(user_agents)
+    headers = {
+        'User-Agent': random_user_agent,
+        'Cookie': 'ab.storage.deviceId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%22b7404a2c-510b-12a8-560e-95604a58f89a%22%2C%22c%22%3A1732187811554%2C%22l%22%3A1732187811554%7D; ab.storage.sessionId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%220eb30e25-7578-9663-a8fb-77a6be7f7ac7%22%2C%22e%22%3A1732190300903%2C%22c%22%3A1732187811597%2C%22l%22%3A1732188500903%7D;',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
+    }
     try:
-        async with http_session.get(url, timeout=100) as response:
+        async with http_session.get(url, timeout=180, headers=headers) as response:
             response.raise_for_status()
             return await response.json()
     except Exception as e:

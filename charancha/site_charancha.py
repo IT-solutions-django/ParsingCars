@@ -8,6 +8,15 @@ from datetime import datetime
 import pytz
 from utils.db import Base
 import asyncio
+import random
+
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.119 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+]
 
 novosibirsk_tz = pytz.timezone("Asia/Novosibirsk")
 
@@ -70,8 +79,22 @@ async def save_cars_to_db_async(cars, async_session):
 
 
 async def request(url, data_post, page, http_session):
+    random_user_agent = random.choice(user_agents)
+    headers = {
+        'User-Agent': random_user_agent,
+        'Cookie': 'AWSALB=UnL1sM2lbTfbKUVubAzkFni+IrMPeniLk1FNsfHdUD8iu0haLrp5aIQXSuAKaw2Cmdjv6lWFnvK1j/6hQVXiUqJ0Kr0OlkVL3sd6paAk3jqauZGzAI/C3pv3/kgM',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
+    }
     try:
-        async with http_session.post(url, data=data_post, timeout=100) as response:
+        async with http_session.post(url, data=data_post, timeout=180, headers=headers) as response:
             response.raise_for_status()
             return await response.text()
     except Exception as e:
@@ -116,7 +139,7 @@ async def process_page_limited(url, data_post, page, http_session, async_session
 
 
 async def process_cars():
-    total_pages = 1000
+    total_pages = 600
 
     semaphore = asyncio.Semaphore(10)
     async_engine = create_async_engine("sqlite+aiosqlite:///cars_2.db")

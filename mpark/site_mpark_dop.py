@@ -7,6 +7,15 @@ from utils.log import logger
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
+import random
+
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.119 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+]
 
 SEM_LIMIT = 10
 
@@ -21,10 +30,25 @@ brackets_pattern = r"(\s?\([^)]*\))$"
 
 
 async def fetch_car_details_json(url, id_car, session, retries=5):
+    random_user_agent = random.choice(user_agents)
+    headers = {
+        'User-Agent': random_user_agent,
+        'Cookie': '_ga=GA1.1.1315818194.1732249290; _ga_E8BS9Q9DTX=GS1.1.1735394940.12.1.1735395032.60.0.0',
+        'Referer': 'https://www.m-park.co.kr/buy/search',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
+    }
     delay = 1
     for attempt in range(retries):
         try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=100)) as response:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=180), headers=headers) as response:
                 response.raise_for_status()
                 return await response.json()
         except aiohttp.ClientError as e:
@@ -98,7 +122,7 @@ async def process_car(session_factory, car, semaphore, client_session):
 
         if update_time == now_date:
             car_details = await fetch_car_details_json(url, car.id_car, client_session)
-            await asyncio.sleep(1)
+            await asyncio.sleep(3)
         else:
             car_details = None
         if car_details:

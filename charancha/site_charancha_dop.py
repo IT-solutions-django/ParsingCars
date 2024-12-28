@@ -6,6 +6,15 @@ from charancha.site_charancha import TimeDealCar
 from utils.log import logger
 from sqlalchemy import select
 import datetime
+import random
+
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.119 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+]
 
 
 async def update_car_details(car, car_details, session):
@@ -58,8 +67,23 @@ async def update_car_details(car, car_details, session):
 
 
 async def request(http_session, url, id_car):
+    random_user_agent = random.choice(user_agents)
+    headers = {
+        'User-Agent': random_user_agent,
+        'Referer': 'https://charancha.com/bu/sell/view?sellNo=199fbf8a-c41d-11ef-a7c4-87395dc696bc',
+        'Cookie': 'AWSALB=Fi6d3ztTcWNm2rv5JyahhP+JM8ZeGH3dBRLe5XECkrSe5j9wLAKKjX6nRIHcEtt2U2Ua+aP2E3byhvqxxT63sRUAcdJ3wEvF65youuKm2ixeVGHtEy8MwIvjzbA3; AWSALBCORS=Fi6d3ztTcWNm2rv5JyahhP+JM8ZeGH3dBRLe5XECkrSe5j9wLAKKjX6nRIHcEtt2U2Ua+aP2E3byhvqxxT63sRUAcdJ3wEvF65youuKm2ixeVGHtEy8MwIvjzbA3',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
+    }
     try:
-        async with http_session.get(url, timeout=100) as response:
+        async with http_session.get(url, timeout=180, headers=headers) as response:
             response.raise_for_status()
             return await response.json()
     except Exception as e:

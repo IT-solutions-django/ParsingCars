@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from sqlalchemy import Column, Integer, String, DateTime, select, func
+from sqlalchemy import Column, Integer, String, DateTime, select
 import requests
 from datetime import datetime
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -8,6 +8,15 @@ from utils.log import logger
 from utils.db import Base
 import asyncio
 import pytz
+import random
+
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.70 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.119 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+]
 
 novosibirsk_tz = pytz.timezone("Asia/Novosibirsk")
 
@@ -52,7 +61,7 @@ def fetch_car_data(url, headers, params):
 
 async def request(url, data_post, page, http_session, headers):
     try:
-        async with http_session.get(url, headers=headers, params=data_post, timeout=100) as response:
+        async with http_session.get(url, headers=headers, params=data_post, timeout=180) as response:
             response.raise_for_status()
             return await response.json()
     except Exception as e:
@@ -134,8 +143,19 @@ async def main():
     url = "https://api.kcar.com/bc/timeDealCar/list"
     page_size = 50
     total_pages = 500
+    random_user_agent = random.choice(user_agents)
     headers = {
-        "Cookie": "ab.storage.deviceId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%22b7404a2c-510b-12a8-560e-95604a58f89a%22%2C%22c%22%3A1732187811554%2C%22l%22%3A1732187811554%7D; ab.storage.sessionId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%220eb30e25-7578-9663-a8fb-77a6be7f7ac7%22%2C%22e%22%3A1732190300903%2C%22c%22%3A1732187811597%2C%22l%22%3A1732188500903%7D;"
+        'User-Agent': random_user_agent,
+        'Cookie': 'ab.storage.deviceId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%22b7404a2c-510b-12a8-560e-95604a58f89a%22%2C%22c%22%3A1732187811554%2C%22l%22%3A1732187811554%7D; ab.storage.sessionId.79570721-e48c-4ca4-b9d6-e036e9bfeff8=%7B%22g%22%3A%220eb30e25-7578-9663-a8fb-77a6be7f7ac7%22%2C%22e%22%3A1732190300903%2C%22c%22%3A1732187811597%2C%22l%22%3A1732188500903%7D;',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'DNT': '1'
     }
 
     semaphore = asyncio.Semaphore(15)
