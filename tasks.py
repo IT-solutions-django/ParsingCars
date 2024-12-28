@@ -33,9 +33,9 @@ def run_all_parsers():
 
 
 app.conf.beat_schedule = {
-    'run-every-day-at-22:10am': {
+    'run-every-day-at-0:17am': {
         'task': 'tasks.run_all_parsers',
-        'schedule': crontab(hour=22, minute=57),
+        'schedule': crontab(hour=0, minute=17),
     },
 }
 app.conf.timezone = 'Asia/Novosibirsk'
