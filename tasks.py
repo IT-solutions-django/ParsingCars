@@ -21,7 +21,7 @@ async def run_parsers():
     await parse_3()
     await parse_4()
     await parse_5()
-    await parse_6()
+    # await parse_6()
 
     logger.info(f"Задачи завершились")
 
