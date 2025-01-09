@@ -93,6 +93,7 @@ async def process_request_limited(car, semaphore, session_factory):
 
             if update_time == now_date:
                 car_details_html = await fetch_car_details(car.id_car)
+                await asyncio.sleep(3)
             else:
                 car_details_html = None
             if car_details_html:
@@ -104,8 +105,9 @@ async def process_request_limited(car, semaphore, session_factory):
 
                         db_session.add(car)
                         await db_session.commit()
-            await asyncio.sleep(3)
-            return car
+                return car
+            else:
+                return None
         except Exception as e:
             logger.error(f"Ошибка при обработке автомобиля {car.id_car}: {e}")
             return None
