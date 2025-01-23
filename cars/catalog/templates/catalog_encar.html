@@ -1,3 +1,5 @@
+{% load custom_filters %}
+
 <html lang="ru" dir="ltr"><head>
   <meta charset="utf-8">
 
@@ -302,12 +304,68 @@
 
 							</div>
 
+							<div class="col">
+								<div class="dropdown">
+									<a class="btn filter-item" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="fuel_type-dropdown">
+										{% with request.GET.fuel_type as selected_fuelType %}
+										<span class="float-start" data-def="Тип двигателя" style="font-weight: 400;">
+											{% for code, name in form.fields.fuel_type.choices %}
+											{% if code == selected_fuelType %}
+											{{ name }}
+                        					{% endif %}
+											{% endfor %}
+											{% if not selected_fuelType %}Тип двигателя{% endif %}
+
+
+
+
+
+
+										</span>
+										{% endwith %}
+										<span class="float-end">
+											<svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path d="M10.9536 1.35378L5.95364 6.35378C5.9072 6.40027 5.85206 6.43715 5.79136 6.46231C5.73066 6.48748 5.6656 6.50043 5.59989 6.50043C5.53418 6.50043 5.46912 6.48748 5.40842 6.46231C5.34772 6.43715 5.29257 6.40027 5.24614 6.35378L0.246137 1.35378C0.152317 1.25996 0.0996094 1.13272 0.0996094 1.00003C0.0996094 0.867352 0.152317 0.740104 0.246137 0.646284C0.339958 0.552463 0.467205 0.499756 0.599887 0.499756C0.732569 0.499756 0.859817 0.552463 0.953637 0.646284L5.59989 5.29316L10.2461 0.646284C10.2926 0.599829 10.3477 0.562978 10.4084 0.537837C10.4691 0.512696 10.5342 0.499756 10.5999 0.499756C10.6656 0.499756 10.7306 0.512696 10.7913 0.537837C10.852 0.562978 10.9072 0.599829 10.9536 0.646284C11.0001 0.692739 11.0369 0.747889 11.0621 0.808586C11.0872 0.869282 11.1002 0.934336 11.1002 1.00003C11.1002 1.06573 11.0872 1.13079 11.0621 1.19148C11.0369 1.25218 11.0001 1.30733 10.9536 1.35378Z" fill="#757575"></path>
+											</svg>
+										</span>
+									</a>
+
+
+										<ul class="dropdown-menu w-100">
+											<li><a class="dropdown-item" href="#" onclick="setField('fuel_type', '', 'Любое')">Любое</a></li>
+
+											<li><hr class="dropdown-divider"></li>
+											{% for value, label in form.fields.fuel_type.choices %}
+        <li>
+            <a class="dropdown-item" href="#" onclick="setField('fuel_type', '{{ value }}', '{{ label }}')">
+                {{ label }}
+            </a>
+        </li>
+    {% endfor %}
+										</ul>
+
+
+
+
+
+
+
+
+								</div>
+								{{ form.fuel_type }}
+							</div>
+
 						</div>
 
-						<div class="d-flex flex-row mt-3 buttons-filter align-items-center">
-						  <button class="btn">Показать</button>
-						  <a href="{{ request.path }}" class="btn">Сбросить</a>
-						</div>
+						<div class="d-flex justify-content-between align-items-center mt-3">
+  <div class="d-flex flex-row buttons-filter align-items-center">
+    <button class="btn">Показать</button>
+    <a href="{{ request.path }}" class="btn">Сбросить</a>
+  </div>
+  <div>
+    <span class="total-count-cars">Количество авто: {{ total_cars }}</span>
+  </div>
+</div>
 					</form>
 				</div>
 			</div>
@@ -325,30 +383,38 @@
 						{% if add_url_photo %}
                         	<img src="http://www.autohub.co.kr{{ car.main_image }}" class="image-placeholder" alt="{{ car.car_mark }} {{ car.car_model }}">
 						{% else %}
-							<img src="{{ car.main_image }}" class="image-placeholder" alt="{{ car.car_mark }} {{ car.car_model }}">
+							<img src="{{ car.first_photo }}" class="image-placeholder" alt="{{ car.marka_name }} {{ car.model_name }}">
 						{% endif %}
                     </a>
 
 
                     <div class="car-info">
-                        <h3 class="my-0">{{ car.car_mark }} {{ car.car_model }}</h3>
-                        <p>{% if car.year %}{{ car.year }} • {% endif %}{% if car.engine_capacity %}{{ car.engine_capacity }} cc • {% endif %}
+                        <h3 class="my-0">{{ car.marka_name }} {{ car.model_name }}</h3>
+                        <p>{% if car.year %}{{ car.year }} • {% endif %}{% if car.eng_v %}{{ car.eng_v|format_number }} cc • {% endif %}
 
 
 
-							{% if car.millage %}
-							{{ car.millage }} km
+							{% if car.mileage %}
+							{{ car.mileage|format_number }} km
 							{% endif %}
-							{% if car.drive %}
+							{% if car.priv %}
 							•
-							{{ car.drive }}
+							{{ car.priv }}
 							{% endif %}
+							{% if car.kpp %}
+							•
+							Автомат
+							{% else %}
+							•
+							Механика
+							{% endif %}
+
 
 						</p>
                         <div class="d-flex justify-content-between align-items-center adapt-auto-info">
                             <span class="mb-sm-0 mb-2">
 
-									{{ car.price }}
+									{{ car.calc_price|format_number }}
 
 							</span>
                             <button class="btn submit-app" data-bs-toggle="modal" data-bs-target="#mainFeedBackModal" onclick="setModalInput('Я заинтересовался автомобилем TOYOTA CROWN SPORT 2024')">Оставить заявку</button>
@@ -149772,7 +149838,7 @@
 
 <script>
 	document.querySelectorAll('.dropdown .float-start').forEach(function(elm) {
-		if (["Марка авто", "Модель авто", "Привод", "Тип КПП", "Цвет"].indexOf(elm.innerHTML.trim()) >= 0) {
+		if (["Марка авто", "Модель авто", "Привод", "Тип КПП", "Цвет", "Тип двигателя"].indexOf(elm.innerHTML.trim()) >= 0) {
 			elm.style.fontWeight = "400";
 		}
 		else {
@@ -149911,6 +149977,7 @@
 			else if (field === "color") { text = "Цвет" }
 			else if (field === "transmission") { text = "Тип КПП" }
 			else if (field === "drive") { text = "Привод" }
+			else if (field === "fuel_type") { text = "Тип двигателя" }
 
 			span.style.fontWeight = "400";
 		}

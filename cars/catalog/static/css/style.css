@@ -745,6 +745,11 @@ header button {
     padding-top: 24px;
 }
 
+.total-count-cars {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
 
 
 
