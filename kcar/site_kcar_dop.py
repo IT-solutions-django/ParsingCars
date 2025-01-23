@@ -25,6 +25,7 @@ async def update_car_details(car, car_details, session):
         car_fuel = details.get("fuelTypecdNm", None)
         car_noAccident = details.get("acdtHistComnt", None)
         drive = details.get("drvgYnNm", None)
+        # engine_capacity = details.get('engdispmnt', None)
 
         images_list = [image["elanPath"] for image in car_details.get("data", {}).get("photoList", [])]
         res_images = ', '.join(images_list)
