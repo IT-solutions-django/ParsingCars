@@ -1,5 +1,5 @@
 from django.urls import path
-from catalog.views import catalog, catalog_encar
+from catalog.views import catalog, catalog_encar, api_cars_brand, car
 from catalog.models import TimeDealCar, TimeDealCarBobaedream, TimeDealCarCharancha, TimeDealCarKcar, TimeDealCarMpark, \
     TimeDealCarEncar
 
@@ -12,4 +12,6 @@ urlpatterns = [
     path('kcar/', catalog, {'model_class': TimeDealCarKcar, 'title': 'Kcar'}, name='kcar'),
     path('mpark/', catalog, {'model_class': TimeDealCarMpark, 'title': 'Mpark'}, name='mpark'),
     path('encar/', catalog_encar, {'model_class': TimeDealCarEncar, 'title': 'Encar'}, name='encar'),
+    path('api/cars/brand/', api_cars_brand, name='api-cars-brand'),
+    path('car/<str:car_id>/', car, name='car')
 ]

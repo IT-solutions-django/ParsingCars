@@ -11,6 +11,29 @@ class AutoHubFilterForm(forms.Form):
         ('Вариатор', 'Вариатор'),
         ('Другое', 'Другое'),
     ]
+    MILLAGE_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(10000, 200000 + 1, 10000)
+    ]
+
+    YEAR_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(2008, 2026)
+    ]
+
+    ENGINE_VOLUME_CHOICES = [('', '')] + [
+        (i, i / 1000)
+        for i in range(0, 10000 + 1, 100)
+    ]
+
+    SORT_CHOICES = [
+        ('', ''),
+        ('new', 'Сначала новые'),
+        ('old', 'Сначала старые'),
+        ('low_millage', 'Сначала с низким пробегом'),
+        ('high_millage', 'Сначала с высоким пробегом')
+    ]
+
     transmission = forms.ChoiceField(
         choices=TRANSMISSION_CHOICES,
         required=False,
@@ -20,49 +43,71 @@ class AutoHubFilterForm(forms.Form):
             },
         ),
     )
+    millage_min = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+    millage_max = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+    engine_volume_min = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+    engine_volume_max = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
 
-    millage_min = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
+    year_min = forms.ChoiceField(
+        choices=YEAR_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Пробег от, km',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
-    )
-    millage_max = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
 
-    engine_volume_min = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
+    year_max = forms.ChoiceField(
+        choices=YEAR_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Объем от, cc',
-            'step': '100'
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    engine_volume_max = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
+
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '100'
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
 
 
@@ -80,6 +125,29 @@ class BobaedreamFilterForm(forms.Form):
         ('Полный', 'Полный привод'),
     ]
 
+    MILLAGE_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(10000, 200000 + 1, 10000)
+    ]
+
+    YEAR_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(2008, 2026)
+    ]
+
+    ENGINE_VOLUME_CHOICES = [('', '')] + [
+        (i, i / 1000)
+        for i in range(0, 10000 + 1, 100)
+    ]
+
+    SORT_CHOICES = [
+        ('', ''),
+        ('new', 'Сначала новые'),
+        ('old', 'Сначала старые'),
+        ('low_millage', 'Сначала с низким пробегом'),
+        ('high_millage', 'Сначала с высоким пробегом')
+    ]
+
     transmission = forms.ChoiceField(
         choices=TRANSMISSION_CHOICES,
         required=False,
@@ -100,48 +168,71 @@ class BobaedreamFilterForm(forms.Form):
         ),
     )
 
-    millage_min = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
+    millage_min = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Пробег от, km',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    millage_max = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
+    millage_max = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+    engine_volume_min = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+    engine_volume_max = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
 
-    engine_volume_min = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
+    year_min = forms.ChoiceField(
+        choices=YEAR_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Объем от, cc',
-            'step': '100'
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    engine_volume_max = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
+
+    year_max = forms.ChoiceField(
+        choices=YEAR_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '100'
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
 
 
@@ -150,12 +241,6 @@ class EncarFilterForm(forms.Form):
         ('', ''),
         ('MT', 'Механика'),
         ('AT', 'Автомат'),
-    ]
-
-    DRIVE_CHOICES = [
-        ('', ''),
-        ('Передний', 'Передний привод'),
-        ('Полный', 'Полный привод'),
     ]
 
     FUEL_TYPE_CHOICES = [
@@ -167,6 +252,39 @@ class EncarFilterForm(forms.Form):
         ('L', 'Сниженный газ')
     ]
 
+    MILLAGE_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(10000, 200000 + 1, 10000)
+    ]
+
+    YEAR_CHOICES = [('', '')] + [
+        (i, i)
+        for i in range(2008, 2026)
+    ]
+
+    ENGINE_VOLUME_CHOICES = [('', '')] + [
+        (i, i / 1000)
+        for i in range(0, 10000 + 1, 100)
+    ]
+
+    COLOR_CHOICES = [('', '')] + [
+        (item['color'], item['color'])
+        for item in TimeDealCarEncar.objects.values('color').filter(color__isnull=False).distinct()
+    ]
+
+    MARKA_CHOICES = [('', '')] + [
+        (item['marka_name'], item['marka_name'])
+        for item in TimeDealCarEncar.objects.values('marka_name').filter(marka_name__isnull=False).distinct()
+    ]
+
+    SORT_CHOICES = [
+        ('', ''),
+        ('new', 'Сначала новые'),
+        ('old', 'Сначала старые'),
+        ('low_millage', 'Сначала с низким пробегом'),
+        ('high_millage', 'Сначала с высоким пробегом')
+    ]
+
     transmission = forms.ChoiceField(
         choices=TRANSMISSION_CHOICES,
         required=False,
@@ -176,50 +294,35 @@ class EncarFilterForm(forms.Form):
             },
         ),
     )
-    millage_min = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
+    millage_min = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Пробег от, km',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    millage_max = forms.IntegerField(
-        min_value=10000,
-        max_value=200000,
+    millage_max = forms.ChoiceField(
+        choices=MILLAGE_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '10000',
-            'onkeypress': 'limitCharacters(this, 6, event)',
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    engine_volume_min = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
+    engine_volume_min = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Объем от, cc',
-            'step': '100'
-        })
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
     )
-    engine_volume_max = forms.IntegerField(
-        min_value=0,
-        max_value=10000,
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'до',
-            'step': '100'
-        })
-    )
-    drive = forms.ChoiceField(
-        choices=DRIVE_CHOICES,
+    engine_volume_max = forms.ChoiceField(
+        choices=ENGINE_VOLUME_CHOICES,
         required=False,
         widget=forms.Select(
             attrs={
@@ -230,6 +333,56 @@ class EncarFilterForm(forms.Form):
 
     fuel_type = forms.ChoiceField(
         choices=FUEL_TYPE_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    year_min = forms.ChoiceField(
+        choices=YEAR_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    year_max = forms.ChoiceField(
+        choices=YEAR_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    color = forms.ChoiceField(
+        choices=COLOR_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    brand = forms.ChoiceField(
+        choices=MARKA_CHOICES,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control hidden-select"
+            },
+        ),
+    )
+
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
         required=False,
         widget=forms.Select(
             attrs={

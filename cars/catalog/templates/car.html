@@ -1,0 +1,388 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+    <title> Авто {{car.marka_name}} {{ car.model_name }} {{ car.year }}</title>
+
+
+
+
+
+    <meta charset="utf-8" />
+
+    <meta name="keywprds" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Odometr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-car.min.css" integrity="sha512-vpFf+ShbNFLKa6naBlMZXTroLsrJkFrUvyczr/OyFymcijnHczI/35t6C0y7PrwehYR/RDQ5MHNP/Msp+mWuKA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" src="/static/vendor/odometr.js" ></script>
+    <script src="/static/vendor/jquery.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" src="/static/vendor/bootstrap.js"></script>
+    <!-- Yandex.Metrika counter -->
+
+    <noscript><div><img src="https://mc.yandex.ru/watch/98661400" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
+
+
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Slider-swiper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/css/swiper.min.css" rel="stylesheet" />
+
+    <!-- Стили -->
+    <link type="text/css" href="/static/css/min_css/normolize.css" rel="stylesheet" />
+    <link type="text/css" href="/static/icomoon/style.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/catalog.css">
+    <link rel="stylesheet" href="/static/css/car.css">
+
+    <!-- Adaptive -->
+    <link rel="stylesheet" href="/static/css/media-base.css">
+    <link rel="stylesheet" href="/static/css/media-main.css">
+    <link rel="stylesheet" href="/static/css/media-catalog.css">
+    <link rel="stylesheet" href="/static/css/media-car.css">
+
+    <!-- AdaptiveJS -->
+    <link href="/static/js/min_js/adptive.js">
+
+
+
+    <script>
+        const setModalInput = (text) => {
+            document.querySelector(".modal textarea").value = text;
+        };
+    </script>
+
+</head>
+
+<header class="header header-visible">
+    <div class="container">
+        <div class="header__inner">
+
+            <div class="header__menu">
+                <a href="{% url 'catalog:encar' %}" class="header__menu-link">Encar</a>
+                <a href="{% url 'catalog:autohub' %}" class="header__menu-link">AutoHub</a>
+                <a href="{% url 'catalog:kcar' %}" class="header__menu-link">Kcar</a>
+                <a href="{% url 'catalog:mpark' %}" class="header__menu-link">Mpark</a>
+                <a href="{% url 'catalog:bobaedream' %}" class="header__menu-link">Bobaedream</a>
+                <a href="{% url 'catalog:charancha' %}" class="header__menu-link">Charancha</a>
+
+            </div>
+            <div class="header__contacts">
+                <div class="header__contacts-left">
+                    <a href="tel:+7 111 111-11-11" target="_blank" class="header__contacts-tel">+7 111 111-11-11</a><br>
+                    <a href="tel:+7 222 222-22-22" target="_blank" class="header__contacts-tel">+7 222 222-22-22</a>
+                </div>
+                <div class="header__contacts-right">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+            <button class="header__burger-btn">
+                <img class="header__burger-btn--img" src="/static/img/burger-menu.svg" alt="Меню" srcset="">
+            </button>
+        </div>
+        <div class="header__inner-mobile">
+            <div class="header__inner-mobile--top">
+                <div class="header__contacts-right header__contacts-right-mobile">
+
+                </div>
+                <a href="tel:+7 111 111-11-11" target="_blank" class="header__contacts-tel header__contacts-tel--mobile">+7 111 111-11-11</a>
+                <a href="tel:+7 222 222-22-22" target="_blank" class="header__contacts-tel header__contacts-tel--mobile">+7 222 222-22-22</a>
+            </div>
+            <hr color="#FFFFFF79" size="2px" style="height: 1px; background-color: #FFFFFF79;" >
+            <div class="header__inner-mobile--bottom">
+                <a href="{% url 'catalog:encar' %}" class="header__menu-link">Encar</a>
+                <a href="{% url 'catalog:autohub' %}" class="header__menu-link">AutoHub</a>
+                <a href="{% url 'catalog:kcar' %}" class="header__menu-link">Kcar</a>
+                <a href="{% url 'catalog:mpark' %}" class="header__menu-link">Mpark</a>
+                <a href="{% url 'catalog:bobaedream' %}" class="header__menu-link">Bobaedream</a>
+                <a href="{% url 'catalog:charancha' %}" class="header__menu-link">Charancha</a>
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<body style="padding-top: 0;">
+
+
+<section class="modal-gallery">
+  <div class="modal-gallery-main">
+    <div class="modal-gallery-slider"></div>
+  </div>
+
+  <div class="modal-thumbnail">
+
+  </div>
+
+  <button class="modal-gallery-btn--close"></button>
+  <button class="modal-gallery-btn--control modal-gallery-btn--prev"></button>
+  <button class="modal-gallery-btn--control modal-gallery-btn--next">
+  </button>
+
+</section>
+
+<section class="card">
+  <div class="container">
+    <div class="bread">
+      <ul class="mx-0 px-0" itemscope itemtype="http://schema.org/BreadcrumbList">
+        <li  itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a itemprop="item" href="/"><span itemprop="name">Главная</span></a>
+          <span><svg xmlns='http://www.w3.org/2000/svg' width='10' height='8'><path d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='#9f9f9f'/></svg></span>
+        </li>
+
+        <li  itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a itemprop="item" href="{% url 'catalog:encar' %}"><span itemprop="name">Автомобили из Encar</span></a>
+          <span><svg xmlns='http://www.w3.org/2000/svg' width='10' height='8'><path d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='#9f9f9f'/></svg></span>
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" style="padding-right: 20px;">
+          <a itemprop="item" href="{{ request.path }}"><span itemprop="name">{{ car.marka_name }} {{ car.model_name }}, {{ car.year }}</span></a>
+        </li>
+
+      </ul>
+    </div>
+    <h1 class="card__title">Купить {{ car.marka_name }} {{ car.model_name }} {{ car.year }} года</h1>
+    <div class="card-box">
+      <div class="card__main">
+        <div class="gallery">
+          <div class="main-slides">
+
+            {% for url_image in car.all_photo %}
+            <img src="{{ url_image }}" alt="{{ car.marka_name }} {{ car.model_name }}"
+              class="gallery-slide slide-0 gallery__Image" data-large="{{ url_image }}"
+              style="cursor: pointer;" />
+              {% endfor %}
+
+
+
+
+            <p class="slides-counter">
+              <span class="curr-slide-count">0</span> /
+              <span class="all-slides-count">8</span>
+            </p>
+
+            <div class="previous-slide-button slider-controller-button">
+              <img class="slider-controller-button--img" src="/static/img/arrow-left.svg" alt="Кнопка назад часть 1" srcset="">
+              <img class="slider-controller-button--back" src="/static/img/Ellipse2057.png" alt="Кнопка назад часть 2" srcset="">
+
+            </div>
+            <div class="next-slide-button slider-controller-button">
+              <img class="slider-controller-button--img" src="/static/img/arrow-right.svg" alt="Кнопка вперед часть 1" srcset="">
+              <img class="slider-controller-button--back" src="/static/img/Ellipse2056.png" alt="Кнопка вперед часть 2" srcset="">
+
+            </div>
+          </div>
+        </div>
+        <div class="thumbnail-slides"></div>
+      </div>
+      <div class="card__info">
+        <h2 class="card__info-title">Характеристики автомобиля</h2>
+
+          {% if car.calc_price %}
+        <p class="card__info-count">от {{ car.calc_price|format_number }} ₽</p>
+          {% else %}
+          <p class="card__info-count">Уточнить цену</p>
+          {% endif %}
+
+
+        <h2 class="card__info-mobile">Характеристики автомобиля</h2>
+        <div class="card__info-content">
+
+          <p class="card__info-text">Год выпуска</p>
+          <p class="card__info-text--black">{{ car.year }}</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {% if car.kpp %}
+          <p class="card__info-text">КПП</p>
+          <p class="card__info-text--black">{{ car.kpp|kpp }}</p>
+            {% endif %}
+
+
+
+
+
+            {% if car.eng_v %}
+          <p class="card__info-text">Объем двигателя</p>
+
+            <p class="card__info-text--black">{{ car.eng_v|eng_v }} л</p>
+            {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+            {% if car.priv %}
+          <p class="card__info-text">Привод</p>
+          <p class="card__info-text--black">{{ car.priv }}</p>
+            {% endif %}
+
+
+            {% if car.color %}
+          <p class="card__info-text">Цвет</p>
+          <p class="card__info-text--black">{{ car.color }}</p>
+            {% endif %}
+
+
+
+            {% if car.mileage %}
+          <p class="card__info-text">Пробег</p>
+          <p class="card__info-text--black">{{ car.mileage|format_number }} км</p>
+            {% endif %}
+
+            {% if car.time %}
+          <p class="card__info-text">Тип двигателя</p>
+          <p class="card__info-text--black">{{ car.time|fuel_type }}</p>
+            {% endif %}
+
+
+
+
+
+        </div>
+        <div class="card__info-bottom">
+
+          <button class="card__info-btn" data-bs-toggle="modal"
+            onclick="setModalInput('Я заинтересовался автомобилем {{ car.marka_name }} {{ car.model_name }} {{ car.year }}')"
+            data-bs-target="#exampleModal">Узнать стоимость</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+
+
+<script src="/static/js/min_js/form.js"></script>
+<script src="/static/js/min_js/card-swiper.js"></script>
+<script src="/static/js/min_js/card-slider.js"></script>
+<script src="/static/js/min_js/correct.js"></script>
+
+
+  <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form method = "POST" id="feedback" class="modal__form">
+                <button type="button" id="close" class="btn-close btn-close-mobile" data-bs-dismiss="modal" aria-label="Close"></button>
+                <input type="hidden" name="csrfmiddlewaretoken" value="Z6C2HmAGuViyv38iHlDBu1GRTGwOiFU1bfRXos69rXzDgsBLEMnYif32B3noJrp2">
+                <button type="button" class="btn-close btn-close-desktop" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h3 class="modal__form-title">Оставить заявку</h3>
+                <p class="modal__form-text">Оставьте свою заявку и наш менеджер свяжется с Вами для уточнения деталей.</p>
+                <div class="modal__form-section modal__form-section--flex">
+                    <div class="modal__form-input--box">
+                        <p class="modal__form-text">Имя</p>
+                        <input type="text" name="name" required id="" placeholder="Имя" class="modal__form-input" maxlength="50">
+
+                    </div>
+                    <div class="modal__form-input--box">
+                        <p class="modal__form-text">Телефон (Обязательно)</p>
+                        <input type="tel" name="number" id="" placeholder="+7 " class="modal__form-input modal__form-input--tel" required pattern="^\+7 \(\d{3}\) \d{3} \d{2} \d{2}$" title="+7 (XXX) XXX XX XX" maxlength="20">
+
+                    </div>
+
+                </div>
+                <div class="modal__form-section">
+                    <div class="modal__form-input--box">
+                        <p class="modal__form-text">Уточните свой вопрос</p>
+                        <textarea name="message" cols="40" rows="10" placeholder="Введите текст сообщения" class="modal__form-input modal__form-textarea" id="">
+</textarea>
+
+                    </div>
+
+                </div>
+                <div class="modal__form-section modal__form-section--bottom">
+                    <div class="modal__form-input--box modal__form-input--box-flex">
+                        <input class="modal__form-checkbox" type="checkbox" id="check-modal" name="check" value="yes" checked>
+                        <label class="custom--checkbox" for="check-modal"></label>
+                        <p class="modal__form-text">С <a href="/media/confidentiality/%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0_%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8.pdf" class="blue--link" download>правилами политики<br>конфиденциальности</a> ознакомлен</p>
+                    </div>
+                    <div class="modal__form-input--box modal__form-btn--box">
+                        <button id="submit" type="submit" class="modal__form-btn">Отправить</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+
+
+<script src="/static/vendor/Imask.js"></script>
+<script src="/static/js/min_js/mask.js"></script>
+<script src="/static/js/min_js/header.js"></script>
+<script src="/static/js/min_js/form.js"></script>
+
+
+</html>
+
+

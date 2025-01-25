@@ -153,6 +153,13 @@ class TimeDealCarEncar(models.Model):
 
         return image
 
+    def all_photo(self):
+        photos = self.images.split('#') if self.images else None
+        if photos:
+            photos = [photo.split('=')[0] for photo in photos]
+
+        return photos
+
     def calc_price(self):
         if self.eng_v:
             price = price_cars(self.year, self.eng_v, self.time, self.finish)
