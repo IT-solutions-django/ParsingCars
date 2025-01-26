@@ -87,7 +87,9 @@ def catalog(request, model_class, title):
             elif sort == 'high_millage':
                 cars = cars.order_by('-millage')
 
-    paginator = Paginator(cars, 10)
+    total_cars = cars.count()
+
+    paginator = Paginator(cars, 12)
 
     page_number = request.GET.get('page', 1)
     page_cars = paginator.get_page(page_number)
@@ -102,7 +104,8 @@ def catalog(request, model_class, title):
                       'page_cars': page_cars,
                       "add_url_photo": add_url_photo,
                       'title': title,
-                      'form': form
+                      'form': form,
+                      'total_cars': total_cars
                   })
 
 

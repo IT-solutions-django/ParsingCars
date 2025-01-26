@@ -492,6 +492,7 @@
                     </div>
                     <button class="catalog__filter-btn">Показать</button>
                     <a class="catalog__filter-btn--blue"  href="{% url 'catalog:encar' %}" style="display: inline-block;">Сбросить </a>
+                    <span class="total-count-cars">Количество авто: {{ total_cars|format_number }}</span>
                 </div>
 
                 <div class="sort-filter">

@@ -493,6 +493,7 @@
                     </div>
                     <button class="catalog__filter-btn">Показать</button>
                     <a class="catalog__filter-btn--blue"  href="{{ request.path }}" style="display: inline-block;">Сбросить </a>
+                    <span class="total-count-cars">Количество авто: {{ total_cars|format_number }}</span>
                 </div>
 
                 <div class="sort-filter">
@@ -575,7 +576,7 @@
 
                                     <span class="catalog__item-count">
                                         {% if car.price %}
-                                        {{ car.price|format_number }}
+                                        {{ car.price|format_number|krw_price }}
                                         {% else %}
                                         Уточнить цену
                                         {% endif %}

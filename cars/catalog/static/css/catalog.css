@@ -670,3 +670,9 @@ input {
 #filter-form input::placeholder{
     color: #23232380 !important;
 }
+
+.total-count-cars {
+    display: flex;
+    justify-content: right;
+    font-weight: bold;
+}

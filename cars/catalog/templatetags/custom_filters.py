@@ -51,4 +51,12 @@ def kpp(value):
 
 @register.filter
 def eng_v(value):
-    return f'{value/1000:.1f}'
+    return f'{value / 1000:.1f}'
+
+
+@register.filter
+def krw_price(value):
+    if str(value).isalpha():
+        return value
+    else:
+        return f'{value} 백만원'
